@@ -16,15 +16,17 @@ describe("chatterbox", () => {
       fetchSpy = sinon.stub(window, "fetch");
       window.fetch.returns(
         Promise.resolve({
-          json: () => [
-            {
-              id: -1,
-              username: "test",
-              text: "message",
-              date: "2017-07-28T03:54:21.134",
-              roomname: "lobby"
-            }
-          ]
+          json: () => ({
+            results: [
+              {
+                id: -1,
+                username: "test",
+                text: "message",
+                date: "2017-07-28T03:54:21.134",
+                roomname: "lobby"
+              }
+            ]
+          })
         })
       );
       app.init();
