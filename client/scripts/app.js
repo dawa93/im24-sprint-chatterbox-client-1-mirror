@@ -43,6 +43,7 @@ const app = {
       }
     })
   },
+  //test
   send : ()=> {},
   clearMessages : ()=> {},
   renderMessage : ()=> {},
