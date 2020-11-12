@@ -1,7 +1,16 @@
 // eslint-disable-next-line
 const app = {
   server: 'http://52.78.206.149:3000/messages',
-  init : () => {app.fetch()},
+  init : () => {
+    app.fetch()
+
+    //this makes infinite fetch roop
+    // setInterval(() => {
+    //   app.clearMessages();
+    //   app.fetch()
+    // }, 500)
+
+  },
   fetch : () => {
     return fetch(app.server)
     .then(res => res.json())
@@ -11,9 +20,9 @@ const app = {
       }
     })
   },
-  send : (message)=> {
+  send : async (message)=> {
     const serverURL = 'http://52.78.206.149:3000/messages'
-    window.fetch(serverURL, {
+      await window.fetch(serverURL, {
       method: 'POST',
       body: JSON.stringify(message),
       headers: {
@@ -28,12 +37,14 @@ const app = {
   },
   clearMessages : ()=> {
     //just delete text and html with innerHTML
-    const chatbox = document.querySelector('#chats')
-    chatbox.innerHTML = '';
+    // const chatbox = document.querySelector('#chats')
+    // chatbox.innerHTML = '';
+
     //also you can use this
-    //while(chatbox.firstChild) {
-    //chatbox.removeChild(chatbox.firstChild);
-    // }
+    const chatbox = document.querySelector('#chats')
+    while(chatbox.firstChild) {
+    chatbox.removeChild(chatbox.firstChild);
+    }
   },
   renderMessage : (data)=> {
     let chatbox = document.querySelector('#chats')
@@ -50,7 +61,9 @@ const app = {
 
     let text = document.createElement('div')
     text.classList.add('text')
-    text.textContent = data.text
+    text.innerHTML = data.text
+    //change textContent to innerHTML because I want to be hacked..
+    // text.textContent = data.text
     tweet.append(text)
 
     let roomname = document.createElement('div')
@@ -63,42 +76,40 @@ const app = {
     date.textContent = data.date
     tweet.append(date)
   },
-  // select : (para) => {
-  //   let selector = document.querySelector('.room').value
-  //   if(selector === 1) {
-
-  //   }
-  // }
 };
 app.init()
 
-//making send button
-let button = document.querySelector('.sendbutton');
-button.addEventListener('click', () => {
-  let input = document.querySelector('#textarea')
-  const message = {
-    username: 'Im name',
-    text: input.value,
-    date: new Date(),
-    roomname: '111' 
-  };
-  app.send(message)
-  app.clearMessages()
-  app.fetch()
-  input.value = ''
+ //making send button
+ let button = document.querySelector('.sendbutton');
+ button.addEventListener('click', async () => {
+   let input = document.querySelector('#textarea')
+   const message = {
+   username: 'code',
+   text: input.value,
+   date: new Date(),
+   roomname: 'codestates' 
+ };
+ app.clearMessages()
+ await app.send(message)
+ await app.fetch()
+ input.value = ''
 })
+//this makes selector
 let selector = document.querySelector('.room');
+console.log(selector.value)
 selector.addEventListener('change', () => {
-  if(selector.value === 1) {
-    fetch(app.server)
+  if(selector.value === "코드스테이츠") {
+    fetch('http://52.78.206.149:3000/messages?roomname=코드스테이츠')
     .then(res => res.json())
     .then(res => {
+      console.log(res)
       app.clearMessages()
-      for(let el of res.results) {
-        if(el.roomname === 1) {
+      for(let el of res) {
           app.renderMessage(el);
-        }
       }
     })
+  }
+  if(selector.value === "all") {
+    app.init();
   }
 })
